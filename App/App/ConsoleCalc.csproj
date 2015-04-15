@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logic\Method\Abstract\IMethod.cs" />
+    <Compile Include="Logic\Method\Abstract\MethodPriority.cs" />
     <Compile Include="Logic\Method\Abstract\OneOperandMethod.cs" />
     <Compile Include="Logic\Method\Abstract\TwoOperandMethod.cs" />
     <Compile Include="Logic\Method\ConstMethod.cs" />
