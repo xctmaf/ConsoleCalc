@@ -12,35 +12,31 @@ namespace App
 {
     class Program
     {
+   
         static void Main(string[] args)
         {
             var calculator = new Calculator(new StandartInputParser());
+            
             calculator.AddMethod(Functor.Create<PowMethod>("^", MethodPriority.High));
 
-            for (; ; )
+            while (true)
             {
-                Console.Write("> ");
-                var expression = Console.ReadLine();
-                if ("q" == expression) break;
-                string result = String.Empty;
+                Console.Write("input@calc  $  ");
+                var input = Console.ReadLine();
+                if (input == "quit")
+                    break;
+
                 try
                 {
-                    result = calculator.Calculate(expression).ToString();
-                }
-                catch (ArgumentNullException ex)
-                {
-                    result = ex.Message;
-                }
-                catch (ArgumentException ex)
-                {
-                    result = ex.Message;
+                    Console.WriteLine("answer@calc $  {0}", calculator.Calculate(input).ToString());
                 }
                 catch (Exception ex)
                 {
-                    result = ex.Message;
+                    Console.WriteLine("error!@calc $  {0}", ex.Message);
                 }
-                Console.WriteLine("> {0}", result);
+
             }
+           
         }
     }
 }

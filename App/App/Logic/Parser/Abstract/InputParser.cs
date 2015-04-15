@@ -13,12 +13,12 @@ namespace App.Logic.Parser.Abstract
     {
         
         abstract public IMethod Parse(string input);
-        protected abstract FunctorFactory GetAvailibleFunctors();
+        protected abstract FunctorFactory GetAvailableFunctors();
 
 
         protected InputParser()
         {
-            Functors = GetAvailibleFunctors();
+            Functors = GetAvailableFunctors();
         }
 
 

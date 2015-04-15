@@ -307,5 +307,40 @@ namespace InputParserTest
             var method2 = parser.Parse(input2);
             Assert.AreEqual(4, method2.Process());
         }
+
+
+        [TestMethod]
+        public void Parser_GetCurrentElement_WhenInputStartWithEmptySpaces_ExpectFirstElement()
+        {
+
+            IInputParser target = new StandartInputParser();
+            PrivateObject obj = new PrivateObject(target);
+
+            var retVal1 = obj.Invoke("GetCurrentElement", new object[] { "       34+2" });
+
+            Assert.AreEqual("34", retVal1);
+
+            var retVal2 = obj.Invoke("GetCurrentElement", new object[] { "   32+2" });
+
+            Assert.AreEqual("32", retVal2);
+           
+            var retVal3 = obj.Invoke("GetCurrentElement", new object[] { "\n\r\n31+2" });
+
+            Assert.AreEqual("31", retVal3);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException), "$ <-- недопустимый синтаксис")]
+        public void Parser_Parse_WhenNoExistingElemInInput_ExpectException()
+        {
+            const string input = "32+3$4";
+            IInputParser parser = new StandartInputParser();
+
+            var method = parser.Parse(input);
+
+            Assert.Fail();
+        }
+        
     }
 }

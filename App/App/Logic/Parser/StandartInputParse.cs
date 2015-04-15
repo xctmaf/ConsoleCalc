@@ -153,7 +153,7 @@ namespace App.Logic.Parser
 
 
 
-        protected override FunctorFactory GetAvailibleFunctors()
+        protected override FunctorFactory GetAvailableFunctors()
         {
             return new FunctorFactory()
                             .Add(Functor.Create<AddMethod>("+", MethodPriority.Lowest))
@@ -161,5 +161,6 @@ namespace App.Logic.Parser
                             .Add(Functor.Create<MulMethod>("*", MethodPriority.MidNormal))
                             .Add(Functor.Create<DivMethod>("/", MethodPriority.MidNormal));
         }
+
     }
 }

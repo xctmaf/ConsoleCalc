@@ -14,6 +14,7 @@ namespace App.Logic
     {
         private readonly IInputParser _parser;
         public FunctorFactory Functors { get { return _parser.Functors; } }
+        
 
         public Calculator(IInputParser parser)
         {
@@ -24,6 +25,8 @@ namespace App.Logic
         {
             _parser.Functors.Add(newMethod);
         }
+
+     
 
         public double Calculate(string input)
         {

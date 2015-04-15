@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace App.Logic.Method
 {
-    class PowMethod: TwoOperandMethod
+    public class PowMethod: TwoOperandMethod
     {
         public PowMethod(IMethod lValue, IMethod rValue) : base(lValue, rValue){ }
 
