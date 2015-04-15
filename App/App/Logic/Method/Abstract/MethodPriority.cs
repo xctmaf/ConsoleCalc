@@ -8,9 +8,13 @@ namespace App.Logic.Method.Abstract
 {
     public enum MethodPriority
     {
-        Low = 0,
-        Mid,
+        Lowest = 0,
+        Low,
+        MidLow,
+        MidNormal,
+        MidHight,
         High,
+        Highest,
         Top
     }
 }

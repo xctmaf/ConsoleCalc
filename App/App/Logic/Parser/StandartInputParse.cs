@@ -7,19 +7,27 @@ using System.Threading.Tasks;
 using App.Logic.Parser.Abstract;
 using App.Logic.Method.Abstract;
 using App.Logic.Method;
+using System.Text.RegularExpressions;
 
 namespace App.Logic.Parser
 {
-    public class StandartInputParse : InputParser
+    public class StandartInputParser : InputParser
     {
         private readonly string Braces = "()";
         private readonly string DecPoint = ".,";
+
+
+        
+
+
         public override IMethod Parse(string input)
         {
+            input = input.Replace('.', ',').Replace(',', System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0]);
+            input = Regex.Replace(input, @"\s", string.Empty);
             if (String.IsNullOrWhiteSpace(input)) 
                 throw new ArgumentNullException("Empty input");
 
-            return _Parse(ref input, MethodPriority.Low); 
+            return _Parse(ref input, MethodPriority.Lowest); 
         }
 
         private IMethod _Parse(ref string input, MethodPriority priority)
@@ -37,20 +45,64 @@ namespace App.Logic.Parser
                     return new ConstMethod(num);
                 else
                     throw new ArgumentException(String.Concat(currentElem, " <-- недопустимый синтаксис"));
-
             }
             else
             {
-                throw new NotImplementedException(); //!
+                var nextPriority = priority + 1;
+                var result = _Parse(ref input, nextPriority);
+                var currentElem = GetCurrentElement(input);
+                var method = Functors.GetFunctor(currentElem);
+                while (method != null && method.Priority == priority)
+                {
+                    currentElem = PopCurrentElement(ref input);
+                    var subMethod = _Parse(ref input, nextPriority);
+                    result = method.Process(result, subMethod);
+                    method = Functors.GetFunctor(GetCurrentElement(input));
+                }
+                return result;              
             }
         }
 
+    
+
         private string GetInputInBraces(ref string input)
         {
-            throw new NotImplementedException();
+            
+            if (String.IsNullOrEmpty(input)) 
+                throw new ArgumentException("Неверный синтаксис скобочного выражения");
+           
+            var bracesCount = 1;
+            var curPosition = -1;
+
+            foreach (char c in input)
+            {
+                if (c == ')') 
+                    bracesCount--;
+                if (c == '(') 
+                    bracesCount++;
+                ++curPosition;
+                if (bracesCount == 0) 
+                    break;
+                
+            }
+            if (bracesCount != 0)
+                throw new ArgumentException("Неверный синтаксис скобочного выражения");
+            //if (input[curPosition] != ')' || curPosition == input.Length)
+            //    throw new ArgumentException("Неверный синтаксис скобочного выражения");
+            
+            var bracesBody = input.Substring(0, curPosition);
+            input = input.Remove(0, curPosition + 1);
+
+            return bracesBody;
+        }
+        private string PopCurrentElement(ref string input)
+        {
+            string result = GetCurrentElement(input);
+            input = input.Remove(0,result.Length);
+            return result;
         }
 
-        private string PopCurrentElement(ref string input)
+        private string GetCurrentElement(string input)
         {
             if (input.Length == 0)
                 return string.Empty;
@@ -95,10 +147,19 @@ namespace App.Logic.Parser
 
         private bool IsBracesOrOperation(char it)
         {
-            return Braces.IndexOf(it) != -1; //! надо еще проверить что мы не знак операции, не только скобочка
+            return Braces.IndexOf(it) != -1 || Functors.Any(x => x.Record.Equals(it.ToString()));
         }
 
 
-     
+
+
+        protected override FunctorFactory GetAvailibleFunctors()
+        {
+            return new FunctorFactory()
+                            .Add(Functor.Create<AddMethod>("+", MethodPriority.Lowest))
+                            .Add(Functor.Create<SubMethod>("-", MethodPriority.Lowest))
+                            .Add(Functor.Create<MulMethod>("*", MethodPriority.MidNormal))
+                            .Add(Functor.Create<DivMethod>("/", MethodPriority.MidNormal));
+        }
     }
 }
